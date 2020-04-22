@@ -2,18 +2,18 @@ import numpy as np
 from PIL import Image, ImageDraw 
 
 k = 20
-# Координаты первого кадра
+# Координаты точек первого кадра
 x_1  = np.array((
-    8*k,        # 0
-    8*k + 3*k,  # 1
-    8*k + 6*k,  # 2
-    8*k + 2*k,  # 3
-    8*k + 3*k,  # 4
-    8*k + 4*k,  # 5
-    8*k,        # 6
-    8*k + 6*k,  # 7
-    8*k + 2*k,  # 8
-    8*k + 4*k   # 9
+    8*k,        # 0я точка левое плечо
+    8*k + 3*k,  # 1я точка центр шеи
+    8*k + 6*k,  # 2я точка правое плечо
+    8*k + 2*k,  # 3я точка левое бедро
+    8*k + 3*k,  # 4я точка центр таза
+    8*k + 4*k,  # 5я точка правое бедро
+    8*k,        # 6я точка левая рука
+    8*k + 6*k,  # 7я точка правая рука
+    8*k + 2*k,  # 8я точка левая нога
+    8*k + 4*k   # 9я точка правая нога
 ))
 y_1 = np.array((
     8*k,        # 0
@@ -29,25 +29,25 @@ y_1 = np.array((
 ))
 # Второй кадр
 x_2 = x_1.copy()
-x_2[6] = 8*k - 3*k
 y_2 = y_1.copy()
-y_2[6] = 8*k - 3*k
+x_2[6] = 8*k - 3*k # шевелим левой рукой
+y_2[6] = 8*k - 3*k # шевелим левой рукой
 # Третий кадр
 x_3 = x_2.copy()
 y_3 = y_2.copy()
-x_3[7] = 8*k + 9*k
-y_3[7] = 8*k - 3*k
+x_3[7] = 8*k + 9*k # шевелим правой рукой
+y_3[7] = 8*k - 3*k # шевелим правой рукой
 # Четвёртый кадр
 x_4 = x_3.copy()
 y_4 = y_3.copy()
-x_4[6] = 8*k - 5*k
-x_4[7] = 8*k + 11*k
-y_4[6] = 8*k
-y_4[7] = 8*k
-
+x_4[6] = 8*k - 5*k # шевелим обоими руками
+x_4[7] = 8*k + 11*k # шевелим обоими руками
+y_4[6] = 8*k # шевелим обоими руками
+y_4[7] = 8*k # шевелим обоими руками
+# Все кадры
 x_set = np.array((x_1, x_2, x_3, x_4, x_1)).T
 y_set = np.array((y_1, y_2, y_3, y_4, y_1)).T
-
+# Создаём промежуточные кадры
 x = []
 xx = []
 y = []
@@ -65,29 +65,30 @@ for i in range(len(x_set)):
     x = []
     y = []
 
-p = np.array((xx, yy))
-
+# соединения точек в линии
+line_seq = [
+    [0, 1], # нулевая с первой
+    [1, 2], # первая со второй и тд
+    [0, 6], [1, 4], [2, 7], [3, 4], [4, 5], [3, 8], [5, 9]] 
 gif = []
-for i in range(len(p[0][0])):
-
+for i in range(len(xx[0])):
     l = []
-    l.append(np.array(([p[0][0][i], p[1][0][i]], [p[0][1][i], p[1][1][i]])))
-    l.append(np.array(([p[0][1][i], p[1][1][i]], [p[0][2][i], p[1][2][i]])))
-    l.append(np.array(([p[0][0][i], p[1][0][i]], [p[0][6][i], p[1][6][i]])))
-    l.append(np.array(([p[0][1][i], p[1][1][i]], [p[0][4][i], p[1][4][i]])))
-    l.append(np.array(([p[0][2][i], p[1][2][i]], [p[0][7][i], p[1][7][i]])))
-    l.append(np.array(([p[0][3][i], p[1][3][i]], [p[0][4][i], p[1][4][i]])))
-    l.append(np.array(([p[0][4][i], p[1][4][i]], [p[0][5][i], p[1][5][i]])))
-    l.append(np.array(([p[0][3][i], p[1][3][i]], [p[0][8][i], p[1][8][i]])))
-    l.append(np.array(([p[0][5][i], p[1][5][i]], [p[0][9][i], p[1][9][i]])))
-
+    for d in line_seq:
+        l.append(np.array(([xx[d[0]][i], yy[d[0]][i]], [xx[d[1]][i], yy[d[1]][i]])))
+    # Координаты головы
     ellip = [(10*k, 5*k), (12*k, 7*k)]
-
+    # Создаём поле для кадра
     img = Image.new('RGB', (22*k, 29*k), 'white') 
     img1 = ImageDraw.Draw(img)
-    img1.ellipse(ellip, fill ="white", outline ="red", width = 3)
+    # Рисуем голову
+    img1.ellipse(ellip, fill = "white", outline = "red", width = 3)
+    # Рисуем все линии
     for j in l:
-        img1.line(list(map(tuple, j)), fill="red", width = 3)
+        img1.line(list(map(tuple, j)), fill = "red", width = 3)
+    # Добавляем кадр в массив
     gif.append(img)
-
-gif[0].save('dance.gif', format='GIF', append_images=gif[1:], save_all=True, duration=120, loop=0)
+# Сохраняем анимацию
+gif[0].save(
+    'dance.gif', format = 'GIF', append_images = gif[1:], 
+    save_all=True, duration=120, loop=0
+)
