@@ -2,18 +2,18 @@ import numpy as np
 from PIL import Image, ImageDraw 
 
 k = 20
-# Координаты точек первого кадра
+# first frame coordinates
 x_1  = np.array((
-    8*k,        # 0я точка левое плечо
-    8*k + 3*k,  # 1я точка центр шеи
-    8*k + 6*k,  # 2я точка правое плечо
-    8*k + 2*k,  # 3я точка левое бедро
-    8*k + 3*k,  # 4я точка центр таза
-    8*k + 4*k,  # 5я точка правое бедро
-    8*k,        # 6я точка левая рука
-    8*k + 6*k,  # 7я точка правая рука
-    8*k + 2*k,  # 8я точка левая нога
-    8*k + 4*k   # 9я точка правая нога
+    8*k,        # 0 point left плечо
+    8*k + 3*k,  # 1 point neck
+    8*k + 6*k,  # 2 point right shoulder
+    8*k + 2*k,  # 3 point left hip
+    8*k + 3*k,  # 4 point 
+    8*k + 4*k,  # 5 point right hip
+    8*k,        # 6 point left hand
+    8*k + 6*k,  # 7 point правая hand
+    8*k + 2*k,  # 8 point left leg
+    8*k + 4*k   # 9 point правая leg
 ))
 y_1 = np.array((
     8*k,        # 0
@@ -30,27 +30,28 @@ y_1 = np.array((
 # Второй кадр
 x_2 = x_1.copy()
 y_2 = y_1.copy()
-x_2[6] = 8*k - 3*k # шевелим левой рукой
-y_2[6] = 8*k - 3*k # шевелим левой рукой
-# x_2[9] = 8*k + 6*k # шевелим правой ногой
+x_2[6] = 8*k - 3*k # move left hand
+y_2[6] = 8*k - 3*k # move left hand
+# x_2[9] = 8*k + 6*k # move right leg
 # Третий кадр
 x_3 = x_2.copy()
 y_3 = y_2.copy()
-x_3[7] = 8*k + 9*k # шевелим правой рукой
-y_3[7] = 8*k - 3*k # шевелим правой рукой
-# x_3[9] = 8*k + 8*k # шевелим правой ногой
+x_3[7] = 8*k + 9*k # move right hand
+y_3[7] = 8*k - 3*k # move right hand
+# x_3[9] = 8*k + 8*k # move right leg
 # Четвёртый кадр
 x_4 = x_3.copy()
 y_4 = y_3.copy()
-x_4[6] = 8*k - 5*k # шевелим обоими руками
-x_4[7] = 8*k + 11*k # шевелим обоими руками
-y_4[6] = 8*k # шевелим обоими руками
-y_4[7] = 8*k # шевелим обоими руками
-# x_4[9] = 8*k + 6*k # шевелим правой ногой
-# Все кадры
+x_4[6] = 8*k - 5*k # move both hands
+x_4[7] = 8*k + 11*k # move обоими hands
+y_4[6] = 8*k # move обоими hands
+y_4[7] = 8*k # move обоими hands
+# x_4[9] = 8*k + 6*k # move right leg
+
+# all frames
 x_set = np.array((x_1, x_2, x_3, x_4, x_1)).T
 y_set = np.array((y_1, y_2, y_3, y_4, y_1)).T
-# Создаём промежуточные кадры
+
 x = []
 xx = []
 y = []
@@ -68,31 +69,31 @@ for i in range(len(x_set)):
     x = []
     y = []
 
-# соединения точек в линии
+# connecting dots in a line
 line_seq = [
-    [0, 1], # нулевая с первой
-    [1, 2], # первая со второй и тд
+    [0, 1], #zero with first
+    [1, 2], # first with second etc
     [0, 6], [1, 4], [2, 7], [3, 4], [4, 5], [3, 8], [5, 9]] 
 gif = []
 for i in range(len(xx[0])):
     l = []
     for d in line_seq:
         l.append(np.array(([xx[d[0]][i], yy[d[0]][i]], [xx[d[1]][i], yy[d[1]][i]])))
-    # Координаты головы
+    # head
     ellip = [(10*k, 5*k), (12*k, 7*k)]
-    # Создаём поле для кадра
+    # empty white frame
     img = Image.new('RGB', (22*k, 29*k), 'white') 
     img1 = ImageDraw.Draw(img)
-    # Рисуем голову
+    # drawing head
     img1.ellipse(ellip, fill = "white", outline = "red", width = 3)
-    # Рисуем все линии
+    # drawing all lines
     for j in l:
         img1.line(list(map(tuple, j)), fill = "red", width = 3)
-    # Добавляем кадр в массив
+    # add frame to the list
     gif.append(img)
-    # Сохраняем кадр
+    # save the frame
     img.save('frames0/frame' + str(i) + '.png')
-# Сохраняем анимацию
+# save the gif
 gif[0].save(
     'dance.gif', format = 'GIF', append_images = gif[1:], 
     save_all=True, duration=120, loop=0
