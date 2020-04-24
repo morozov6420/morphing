@@ -87,6 +87,8 @@ for i in range(len(xx[0])):
         img1.line(list(map(tuple, j)), fill = "red", width = 3)
     # Добавляем кадр в массив
     gif.append(img)
+    # Сохраняем кадр
+    img.save('frames/frame' + str(i) + '.png')
 # Сохраняем анимацию
 gif[0].save(
     'dance.gif', format = 'GIF', append_images = gif[1:], 
