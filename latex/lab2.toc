@@ -1,0 +1,4 @@
+\babel@toc {russian}{}
+\contentsline {chapter}{Алгоритм морфинга}{1}%
+\contentsline {chapter}{Морфинг растровых изображений}{1}%
+\contentsline {chapter}{Морфинг векторных изображений}{2}%
