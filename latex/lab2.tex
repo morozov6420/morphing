@@ -14,6 +14,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{animate}
+\usepackage{hyperref}
 \usepackage{listings}
 \lstset{
     language = python, 
@@ -265,14 +266,16 @@ gif[0].save(
 \end{lstlisting}
 
 \begin{figure}[ht]
-    \label{morf:dance1}
     \minipage{0.5\textwidth}
-        \animategraphics[controls,loop,width=\linewidth]{20}{../animate/frames0/frame}{0}{20}
+    \animategraphics[controls,loop,width=\linewidth]{20}{../animate/frames0/frame}{0}{20}
     \endminipage\hfill
     \minipage{0.5\textwidth}
-        \animategraphics[controls,loop,width=\linewidth]{20}{../animate/frames1/frame}{0}{20}
+    \animategraphics[controls,loop,width=\linewidth]{20}{../animate/frames1/frame}{0}{20}
     \endminipage\hfill
     \caption{Результаты работы алгоритма морфинга для изображений}
+    \label{morf:dance}
 \end{figure}
+
+Весь код и результаты его работы представлены в открытом \href{https://github.com/morozov6420/morphing}{репозитории}.
 
 \end{document}
